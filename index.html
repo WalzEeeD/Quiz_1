@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Problems of Newborns Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        .question {
+            margin-bottom: 30px;
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .options {
+            margin-bottom: 15px;
+        }
+        .option {
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .option.selected {
+            background-color: #bde0ff;
+        }
+        .option.correct {
+            background-color: #c8ffc8;
+            border-color: green;
+        }
+        .option.incorrect {
+            background-color: #ffcccc;
+            border-color: red;
+        }
+        .feedback {
+            display: none;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #28a745;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .topic-title {
+            background-color: #eaf2f8;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2980b9;
+        }
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .result-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .score {
+            font-size: 50px;
+            color: #3498db;
+            margin: 20px 0;
+        }
+        .restart-btn {
+            margin-top: 20px;
+        }
+        .score-tracker {
+            background-color: #f0f8ff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .skipped-label {
+            display: inline-block;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .mascot-container {
+            position: absolute;
+            right: 20px;
+            bottom: -120px;
+            width: 120px;
+            height: 120px;
+            z-index: 10;
+        }
+        .mascot-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .result-message {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        .result-gif {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Health Problems of Newborns Quiz</h1>
+        
+        <div class="score-tracker" id="score-tracker">
+            Correct: 0/93 (0%)
+        </div>
+        
+        <div id="question-container"></div>
+        
+        <div class="nav-buttons">
+            <div class="button-group">
+                <button id="first-btn">First</button>
+                <button id="prev-btn">Previous</button>
+            </div>
+            <div class="button-group">
+                <button id="skip-btn">Skip</button>
+                <button id="next-btn" disabled>Next</button>
+                <button id="last-btn">Last</button>
+            </div>
+        </div>
+        
+        <div class="progress">
+            <span id="progress-text">Question 1 of 93</span>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div id="result-container" class="result-container">
+            <div class="result-title">Quiz Completed!</div>
+            <p>You have completed the Health Problems of Newborns Quiz.</p>
+            <div id="score-display" class="score">0/93</div>
+            <p id="skipped-questions-info"></p>
+            <div id="result-message" class="result-message"></div>
+            <img id="result-gif" class="result-gif" src="" alt="Result">
+            <button id="restart-btn" class="restart-btn">Restart Quiz</button>
+        </div>
+        
+        <div class="mascot-container">
+            <img id="mascot-gif" class="mascot-gif" src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjh1ZHBqbHhvajI2M3k2dWUzMm01cnVtZmU1YTd3eWs1aTB5azZrciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/WNlsQiGMU387hn7UZQ/giphy.gif" alt="Mascot">
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                topic: "Preterm Newborn",
+                question: "A preterm newborn is defined as:",
+                options: [
+                    "An infant born before 20 weeks of gestation",
+                    "An infant born before 37 weeks but greater than 20 weeks of gestation",
+                    "An infant born after 42 weeks of gestation",
+                    "An infant born with low birth weight regardless of gestational age"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Preterm Newborn",
+                question: "True or False: The primary concern with preterm newborns relates to immaturity of all body systems.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Preterm Newborn",
+                question: "Which of the following is NOT a characteristic of a preterm newborn?",
+                options: [
+                    "Respirations are irregular with periods of apnea",
+                    "Poor suck and swallow reflexes",
+                    "Extremities are maintained in flexion",
+                    "Skin is thin with visible blood vessels"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Assessment of Preterm Newborn",
+                question: "True or False: In preterm newborns, lanugo appears in woolly patches on the skin and head.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Preterm Newborn",
+                question: "Which of the following is a characteristic of a preterm male newborn?",
+                options: [
+                    "Fully descended testes",
+                    "Undescended testes",
+                    "Enlarged scrotum",
+                    "Fully developed penis"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Interventions for Preterm Newborn",
+                question: "How often should vital signs be monitored in a preterm newborn?",
+                options: [
+                    "Every 1 to 2 hours",
+                    "Every 2 to 4 hours",
+                    "Every 6 to 8 hours",
+                    "Once daily"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Interventions for Preterm Newborn",
+                question: "True or False: A preterm newborn should be maintained in a cooling device to prevent fever.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Interventions for Preterm Newborn",
+                question: "Which of the following is an important nursing intervention for a preterm newborn?",
+                options: [
+                    "Encourage exposure to multiple visitors to boost immunity",
+                    "Maintain the newborn in a warming device",
+                    "Limit fluid intake to prevent fluid overload",
+                    "Provide minimal handling to avoid overstimulation"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Kangaroo Mother Care",
+                question: "Kangaroo mother care (KMC) involves:",
+                options: [
+                    "Placing the infant in an incubator",
+                    "Infants being carried with skin-to-skin contact, usually by the mother",
+                    "Keeping the infant wrapped in a kangaroo-like pouch",
+                    "Providing formula feeding only"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Kangaroo Mother Care",
+                question: "True or False: Kangaroo mother care is a method specifically for term infants with normal birth weight.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Most Premature Baby",
+                question: "James Elgin Gill, born in 1987, was:",
+                options: [
+                    "90 days premature",
+                    "128 days premature",
+                    "150 days premature",
+                    "200 days premature"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Most Premature Baby",
+                question: "True or False: James Elgin Gill had a normal birth weight despite being premature.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Postterm Newborn",
+                question: "A postterm newborn is defined as:",
+                options: [
+                    "An infant born before 37 weeks of gestation",
+                    "An infant born after 42 weeks of gestation",
+                    "An infant born between 37 and 40 weeks of gestation",
+                    "An infant born with high birth weight regardless of gestational age"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Postterm Newborn",
+                question: "Which of the following is characteristic of a postterm newborn?",
+                options: [
+                    "Presence of lanugo",
+                    "Short fingernails",
+                    "Parchment-like skin without lanugo",
+                    "Minimal scalp hair"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Postterm Newborn",
+                question: "True or False: Meconium staining is possibly present on nails and umbilical cord of a postterm newborn.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Postterm Newborn",
+                question: "Which of the following is NOT a nursing intervention for a postterm newborn?",
+                options: [
+                    "Providing normal newborn care",
+                    "Monitoring for hypoglycemia",
+                    "Maintaining newborn's temperature",
+                    "Administering surfactant therapy"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Nursing Interventions for Postterm Newborn",
+                question: "True or False: Monitoring for meconium aspiration is an important nursing intervention for a postterm newborn.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Small for Gestational Age",
+                question: "A Small for Gestational Age (SGA) newborn is defined as:",
+                options: [
+                    "A newborn who is plotted at or below the 10th percentile on the intrauterine growth curve",
+                    "A newborn who is plotted at or above the 90th percentile on the intrauterine growth curve",
+                    "Any newborn weighing less than 2,000 grams",
+                    "Any newborn born before 37 weeks gestation"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Small for Gestational Age",
+                question: "True or False: According to the World Health Organization, a low birth weight (LBW) infant is defined as any baby born under 2,500 grams.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Small for Gestational Age",
+                question: "What is the birth weight criteria for an extremely low birth weight (ELBW) infant?",
+                options: [
+                    "Less than 2,500 grams",
+                    "Less than 2,000 grams",
+                    "Less than 1,500 grams",
+                    "Less than 1,000 grams"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Etiology of Small for Gestational Age",
+                question: "Which of the following is NOT a cause of small for gestational age?",
+                options: [
+                    "Placental insufficiency",
+                    "Infections",
+                    "Maternal obesity",
+                    "Hypertension"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Etiology of Small for Gestational Age",
+                question: "True or False: Maternal smoking can contribute to a baby being small for gestational age.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment and Interventions for Small for Gestational Age",
+                question: "Which of the following is a sign of polycythemia in a small for gestational age newborn?",
+                options: [
+                    "Pallor",
+                    "Ruddy appearance",
+                    "Hyperpnea",
+                    "Hypertension"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Small for Gestational Age",
+                question: "True or False: Maintaining body temperature is an important nursing intervention for a small for gestational age newborn.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment and Interventions for Small for Gestational Age",
+                question: "Which of the following is an appropriate nursing intervention for a small for gestational age newborn?",
+                options: [
+                    "Delaying early feedings to prevent aspiration",
+                    "Monitoring for hypoglycemia",
+                    "Encouraging weight loss",
+                    "Maintaining a cool environment"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Large for Gestational Age",
+                question: "A Large for Gestational Age (LGA) newborn is defined as:",
+                options: [
+                    "A newborn who is plotted at or below the 10th percentile on the intrauterine growth curve",
+                    "A newborn who is plotted at or above the 90th percentile on the intrauterine growth curve",
+                    "Any newborn weighing more than 4,000 grams",
+                    "Any newborn born after 42 weeks gestation"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Large for Gestational Age",
+                question: "True or False: The heaviest birth on record weighed approximately 22 pounds.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment and Interventions for Large for Gestational Age",
+                question: "Which of the following is a common assessment finding in a large for gestational age newborn?",
+                options: [
+                    "Hyperthermia",
+                    "Hypoglycemia",
+                    "Hypertension",
+                    "Hyperkalemia"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Large for Gestational Age",
+                question: "True or False: Birth trauma or injury is a concern for large for gestational age newborns.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment and Interventions for Large for Gestational Age",
+                question: "Which nursing intervention is appropriate for a large for gestational age newborn?",
+                options: [
+                    "Monitoring for hyperglycemia",
+                    "Delaying feedings",
+                    "Initiating early feedings",
+                    "Restricting fluid intake"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Respiratory Distress Syndrome",
+                question: "Respiratory Distress Syndrome is caused by:",
+                options: [
+                    "Infection of the lungs",
+                    "Aspiration of amniotic fluid",
+                    "Immaturity and inability to produce surfactant",
+                    "Congenital malformation of the lungs"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Respiratory Distress Syndrome",
+                question: "True or False: Respiratory Distress Syndrome results in hypoxia and acidosis.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Respiratory Distress Syndrome",
+                question: "Which of the following is NOT a sign of respiratory distress in a newborn?",
+                options: [
+                    "Nasal flaring",
+                    "Expiratory grunting",
+                    "Bradypnea",
+                    "Retractions"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Assessment of Respiratory Distress Syndrome",
+                question: "True or False: Cyanosis is a sign of respiratory distress syndrome.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Respiratory Distress Syndrome",
+                question: "Which of the following assessments would help diagnose Respiratory Distress Syndrome?",
+                options: [
+                    "Electrocardiogram",
+                    "Chest X-Ray",
+                    "Cranial ultrasound",
+                    "Kidney function tests"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Interventions for Respiratory Distress Syndrome",
+                question: "When providing respiratory therapy to a preterm newborn with RDS, what can be used for percussion?",
+                options: [
+                    "Bare hands only",
+                    "Padded small plastic cup or small oxygen mask",
+                    "Metal cup",
+                    "Respiratory therapy is contraindicated in preterm newborns"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Interventions for Respiratory Distress Syndrome",
+                question: "True or False: Any premature newborn who required oxygen support should be scheduled for an eye examination before discharge to assess for retinal damage.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Respiratory Distress Syndrome",
+                question: "How should a newborn with respiratory distress syndrome be positioned?",
+                options: [
+                    "On the abdomen with neck flexed",
+                    "On the side or back with neck slightly extended",
+                    "On the back with neck hyperextended",
+                    "On the abdomen with head turned to the side"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Additional Interventions for Respiratory Distress Syndrome",
+                question: "True or False: Surfactant replacement therapy is administered through a nebulizer for a newborn with respiratory distress syndrome.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Meconium Aspiration Syndrome",
+                question: "Meconium Aspiration Syndrome occurs in:",
+                options: [
+                    "Preterm newborns only",
+                    "Term or postterm newborns",
+                    "Small for gestational age newborns only",
+                    "Newborns with congenital anomalies only"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Meconium Aspiration Syndrome",
+                question: "True or False: Aspiration of meconium can occur in utero or with the first breath.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Meconium Aspiration Syndrome",
+                question: "The release of meconium into the amniotic fluid is thought to be related to:",
+                options: [
+                    "Normal fetal development",
+                    "A stressful fetal event",
+                    "Maternal diet",
+                    "Low amniotic fluid volume"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Meconium Aspiration Syndrome",
+                question: "Which of the following is a sign of meconium aspiration syndrome?",
+                options: [
+                    "Parchment-like skin",
+                    "Yellow-green staining of nails and umbilical cord",
+                    "Absence of respiratory distress",
+                    "Hypoglycemia"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Meconium Aspiration Syndrome",
+                question: "True or False: If a newborn is delivered in an active, crying state with no evidence of respiratory distress, endotracheal suctioning is necessary.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Meconium Aspiration Syndrome",
+                question: "If a newborn with meconium staining is delivered and exhibits inactivity and lack of cry, what intervention should be performed?",
+                options: [
+                    "Immediate bathing",
+                    "Endotracheal suctioning",
+                    "Administration of antibiotics",
+                    "Chest physiotherapy"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Interventions for Severe Meconium Aspiration Syndrome",
+                question: "True or False: Newborns with severe meconium aspiration syndrome may benefit from extracorporeal membrane oxygenation (ECMO).",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Interventions for Severe Meconium Aspiration Syndrome",
+                question: "Extracorporeal membrane oxygenation (ECMO) uses:",
+                options: [
+                    "A modified heart-lung machine",
+                    "A ventilator only",
+                    "Endotracheal suctioning",
+                    "Surfactant replacement"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Clinical Snapshot",
+                question: "True or False: The 3-day-old newborn in the case scenario has jaundice that progressed from the face to the trunk and extremities.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Hyperbilirubinemia",
+                question: "Hyperbilirubinemia is characterized by:",
+                options: [
+                    "Green discoloration of the skin",
+                    "Yellowish discoloration of the skin and other organs (jaundice/icterus)",
+                    "Reddish discoloration of the skin",
+                    "Blue discoloration of the skin"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Hyperbilirubinemia",
+                question: "True or False: Hyperbilirubinemia is a rare finding in newborns.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Types of Jaundice",
+                question: "Physiologic jaundice in a full-term newborn typically appears:",
+                options: [
+                    "Before birth",
+                    "Within the first 24 hours of life",
+                    "After the first 24 hours of life",
+                    "Only after 1 week of life"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Types of Jaundice",
+                question: "True or False: Jaundice appearing during the first day of life indicates a pathological process.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Types of Jaundice",
+                question: "Which of the following is characteristic of pathologic jaundice?",
+                options: [
+                    "It appears after 24 hours of life",
+                    "It is typically benign",
+                    "It may indicate early hemolysis of RBCs",
+                    "It usually resolves without treatment"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Complications of Hyperbilirubinemia",
+                question: "Which form of bilirubin is most commonly seen in newborns?",
+                options: [
+                    "Conjugated bilirubin",
+                    "Unconjugated bilirubin",
+                    "Direct bilirubin",
+                    "Albumin-bound bilirubin"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Complications of Hyperbilirubinemia",
+                question: "True or False: Unconjugated bilirubin is highly toxic to neurons.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Complications of Hyperbilirubinemia",
+                question: "Kernicterus is defined as:",
+                options: [
+                    "Temporary jaundice in newborns",
+                    "Yellow staining of the brain cells and brain cell necrosis resulting in permanent changes",
+                    "Elevation of conjugated bilirubin only",
+                    "Normal neonatal jaundice"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Types of Unconjugated Hyperbilirubinemia",
+                question: "Which type of jaundice appears during the first 24 hours of life?",
+                options: [
+                    "Physiologic jaundice",
+                    "Breastfeeding-associated jaundice",
+                    "Breast milk jaundice",
+                    "Hemolytic disease"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Types of Unconjugated Hyperbilirubinemia",
+                question: "True or False: Breast milk jaundice (late onset) may remain for 3-12 weeks or more.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Types of Unconjugated Hyperbilirubinemia",
+                question: "Breastfeeding-associated (early onset) jaundice is caused by:",
+                options: [
+                    "Blood antigen incompatibility",
+                    "Liver disease",
+                    "Decreased milk intake and fewer calories consumed before mother's milk is well established",
+                    "Factors in breast milk that prevent bilirubin conjugation"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Clinical Manifestations and Diagnostic Evaluation",
+                question: "At what serum bilirubin level is jaundice typically observed?",
+                options: [
+                    ">2 mg/dl",
+                    ">5 mg/dl",
+                    ">10 mg/dl",
+                    ">15 mg/dl"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Clinical Manifestations and Diagnostic Evaluation",
+                question: "True or False: Normal value of unconjugated bilirubin is 0.2-1.4 mg/dl.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Clinical Manifestations and Diagnostic Evaluation",
+                question: "Transcutaneous bilirubinometry (TcB) is:",
+                options: [
+                    "An invasive procedure requiring blood sampling",
+                    "A noninvasive monitoring method via cutaneous reflectance measurements",
+                    "A surgical procedure to reduce bilirubin levels",
+                    "A treatment for hyperbilirubinemia"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Care for Hyperbilirubinemia",
+                question: "When assessing for jaundice in a newborn's skin, what type of light should be used?",
+                options: [
+                    "Fluorescent light",
+                    "Natural light",
+                    "Ultraviolet light",
+                    "Blue light"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Care for Hyperbilirubinemia",
+                question: "True or False: Jaundice starts at the feet first and spreads to the head last.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Care for Hyperbilirubinemia",
+                question: "Which nursing intervention helps hasten the passage of meconium and encourage excretion of bilirubin?",
+                options: [
+                    "Delaying feedings",
+                    "Facilitating early, frequent feeding",
+                    "Administering laxatives",
+                    "Restricting fluid intake"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Phototherapy",
+                question: "Phototherapy works by:",
+                options: [
+                    "Preventing the production of bilirubin",
+                    "Enhancing the excretion of bilirubin",
+                    "Converting bilirubin to hemoglobin",
+                    "Removing bilirubin through the skin"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Phototherapy",
+                question: "True or False: Light promotes bilirubin excretion by photoisomerization, which alters the structure of bilirubin to a soluble form called lumirubin.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Care for Phototherapy",
+                question: "During phototherapy, the newborn's eyes should be:",
+                options: [
+                    "Kept open to absorb the light",
+                    "Covered with eye shield or patches",
+                    "Partially covered",
+                    "Eyes do not need any protection"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Nursing Care for Phototherapy",
+                question: "True or False: During phototherapy, as much of the newborn's skin as possible should be exposed to the light.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Care for Phototherapy",
+                question: "How often should eye shields be removed during phototherapy to inspect the eyes?",
+                options: [
+                    "Never - they should remain in place continuously",
+                    "At least once per shift",
+                    "Every hour",
+                    "Every 15 minutes"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Side Effects of Phototherapy",
+                question: "Which of the following is NOT a side effect of phototherapy?",
+                options: [
+                    "Loose green stools",
+                    "Skin rashes",
+                    "Dehydration",
+                    "Weight gain"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Side Effects of Phototherapy",
+                question: "True or False: Bronze baby syndrome occurs when serum, urine, and skin turn grayish brown several hours after the infant is placed under the light.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Exchange Transfusion",
+                question: "Exchange transfusion is indicated for:",
+                options: [
+                    "All newborns with jaundice",
+                    "Severe hyperbilirubinemia",
+                    "Mild hyperbilirubinemia",
+                    "Physiologic jaundice only"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Exchange Transfusion",
+                question: "True or False: Exchange transfusion is performed through an umbilical vein catheter.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Exchange Transfusion",
+                question: "Exchange transfusion should be considered if phototherapy fails to result in a decrease of how many mg/dL within 4-6 hours of initiation?",
+                options: [
+                    "0.5-1 mg/dL",
+                    "1-2 mg/dL",
+                    "3-4 mg/dL",
+                    "5-6 mg/dL"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Sepsis",
+                question: "Neonatal sepsis is defined as:",
+                options: [
+                    "Yellow discoloration of the skin",
+                    "Respiratory distress in newborns",
+                    "Generalized infection resulting from the presence of bacteria in the blood",
+                    "Abnormal red blood cell destruction"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Sepsis",
+                question: "True or False: Group B streptococcal infection is a common cause of neonatal sepsis.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Sepsis",
+                question: "Early sepsis typically occurs at:",
+                options: [
+                    "1 to 3 days of age",
+                    "1 to 3 weeks of age",
+                    "1 to 3 months of age",
+                    "Before birth only"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Early-onset vs. Late-onset Sepsis",
+                question: "Early-onset sepsis (EOS) is generally caused by:",
+                options: [
+                    "Transmission of pathogens from hospital surfaces",
+                    "Transmission of pathogens from healthcare workers",
+                    "Transmission of pathogens from the female genitourinary system",
+                    "Transmission of pathogens from visitors"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Early-onset vs. Late-onset Sepsis",
+                question: "True or False: Preterm neonates are at higher risk for sepsis/infection than term neonates.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Early-onset vs. Late-onset Sepsis",
+                question: "Which of the following is a maternal factor that increases the risk of neonatal sepsis?",
+                options: [
+                    "Cesarean delivery",
+                    "Advanced maternal age",
+                    "Prolonged rupture of membranes greater than 18 hours",
+                    "Maternal exercise during pregnancy"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Assessment and Diagnosis of Sepsis",
+                question: "Which of the following is NOT a typical assessment finding in neonatal sepsis?",
+                options: [
+                    "Pallor",
+                    "Tachypnea",
+                    "Poor feeding",
+                    "Hypertension"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Assessment and Diagnosis of Sepsis",
+                question: "True or False: Neonates with clinical signs of sepsis should have a complete blood count (CBC), differential with smear, blood culture, and possibly a lumbar puncture.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Sepsis",
+                question: "If apnea is present in a newborn with sepsis, the nurse should:",
+                options: [
+                    "Immediately intubate the newborn",
+                    "Administer chest compressions",
+                    "Gently rub the chest or foot to stimulate breathing",
+                    "Administer epinephrine"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Nursing Interventions for Sepsis",
+                question: "True or False: Antibiotics administered to newborns with sepsis should be observed carefully for toxicity due to immature liver and kidneys.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Sepsis",
+                question: "Which of the following is an appropriate nursing intervention for a newborn with sepsis?",
+                options: [
+                    "Maintain warmth in a radiant warmer",
+                    "Encourage multiple visitors to stimulate the newborn",
+                    "Restrict fluid intake",
+                    "Avoid monitoring weight daily"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Erythroblastosis Fetalis (Hemolytic Disease of the Newborn)",
+                question: "Erythroblastosis fetalis is characterized by:",
+                options: [
+                    "Destruction of white blood cells",
+                    "Destruction of red blood cells resulting from an antigen-antibody reaction",
+                    "Destruction of platelets",
+                    "Production of immature white blood cells"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Erythroblastosis Fetalis (Hemolytic Disease of the Newborn)",
+                question: "True or False: In erythroblastosis fetalis, the fetus attempts to compensate for progressive hemolysis by accelerating the rate of erythropoiesis.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Erythroblastosis Fetalis (Hemolytic Disease of the Newborn)",
+                question: "The term \"erythroblastosis fetalis\" refers to:",
+                options: [
+                    "Jaundice in newborns",
+                    "The appearance of immature RBCs (erythroblasts) in fetal circulation",
+                    "Destruction of red blood cells",
+                    "Abnormal red blood cell shape"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Rh Incompatibility",
+                question: "Rh incompatibility occurs when:",
+                options: [
+                    "The mother is Rh-positive and the fetus is Rh-negative",
+                    "The mother is Rh-negative and the fetus is Rh-positive",
+                    "Both mother and fetus are Rh-positive",
+                    "Both mother and fetus are Rh-negative"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Rh Incompatibility",
+                question: "True or False: Exchange of fetal and maternal blood occurs primarily when the placenta separates at birth.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Rh Incompatibility",
+                question: "Sensitization in Rh incompatibility is:",
+                options: [
+                    "Common with the first pregnancy",
+                    "Rare with the first pregnancy",
+                    "Only occurs in multiple gestations",
+                    "Only occurs with cesarean deliveries"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment and Interventions for Erythroblastosis Fetalis",
+                question: "Which of the following is NOT an assessment finding in erythroblastosis fetalis?",
+                options: [
+                    "Anemia",
+                    "Jaundice that develops rapidly after birth and before 24 hours",
+                    "Edema",
+                    "Hyperthermia"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Assessment and Interventions for Erythroblastosis Fetalis",
+                question: "True or False: Rho(D) immune globulin is administered to the mother during the first 72 hours after birth if the Rh-negative mother delivers an Rh-positive fetus but remains unsensitized.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment and Interventions for Erythroblastosis Fetalis",
+                question: "During an exchange transfusion for a newborn with erythroblastosis fetalis, the newborn's blood is replaced with:",
+                options: [
+                    "Rh-positive blood",
+                    "Rh-negative blood",
+                    "O-negative blood only",
+                    "The mother's blood"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Rho(D) Immune Globulin",
+                question: "Prevention of anti-Rho(D) antibody formation is most successful if Rho(D) immune globulin is administered:",
+                options: [
+                    "Only during pregnancy",
+                    "Only after delivery",
+                    "Twice - at 28 weeks' gestation and within 72 hours after delivery",
+                    "Monthly throughout pregnancy"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Rho(D) Immune Globulin",
+                question: "True or False: Rho(D) immune globulin should be administered within 72 hours after potential or actual exposure to Rh-positive blood.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Rho(D) Immune Globulin",
+                question: "The purpose of Rho(D) immune globulin is to:",
+                options: [
+                    "Treat existing Rh sensitization",
+                    "Prevent isoimmunization in Rh-negative clients who are negative for Rh antibodies",
+                    "Increase the mother's Rh antibody levels",
+                    "Treat jaundice in the newborn"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Question and Answer about Isoimmunization",
+                question: "For a woman who is 18 weeks pregnant and diagnosed with isoimmunization, which of the following would be appropriate?",
+                options: [
+                    "No immediate action is necessary",
+                    "No treatment is available until the infant is born",
+                    "Fetal transfusion may be required",
+                    "Administration of Rho(D) immune globulin is indicated"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Question and Answer about Isoimmunization",
+                question: "True or False: Once sensitization occurs, Rho(D) immune globulin is effective in preventing complications.",
+                options: ["True", "False"],
+                correctIndex: 1
+            },
+            {
+                topic: "Question and Answer about Isoimmunization",
+                question: "Isoimmunization indicates that the mother:",
+                options: [
+                    "Has never been exposed to a blood antigen",
+                    "Has already been exposed to a blood antigen and has developed antibodies",
+                    "Is immune to Rh sensitization",
+                    "Has a blood type incompatible with the father"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Fetal Alcohol Spectrum Disorders (FASDs)",
+                question: "Fetal Alcohol Spectrum Disorders (FASDs) are caused by:",
+                options: [
+                    "Maternal alcohol use during pregnancy",
+                    "Paternal alcohol use before conception",
+                    "Environmental toxins during pregnancy",
+                    "Genetic mutations"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Fetal Alcohol Spectrum Disorders (FASDs)",
+                question: "True or False: Fetal alcohol syndrome is the most severe of the FASDs.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Fetal Alcohol Spectrum Disorders (FASDs)",
+                question: "FASDs are a result of:",
+                options: [
+                    "Maternal malnutrition",
+                    "Teratogenesis",
+                    "Chromosomal abnormalities",
+                    "Intrauterine infections"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Assessment of FASDs",
+                question: "Which of the following is NOT a facial change associated with FASDs?",
+                options: [
+                    "Short palpebral fissures",
+                    "Hypoplastic philtrum",
+                    "Thin upper lip",
+                    "Prominent ear lobes"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Assessment of FASDs",
+                question: "True or False: Seizures may be present in newborns with FASDs.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of FASDs",
+                question: "Which of the following is a characteristic finding in a newborn with FASDs?",
+                options: [
+                    "Hypersensitivity to stimuli",
+                    "Decreased respiratory rate",
+                    "Hypoactive reflexes",
+                    "Increased appetite"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for FASDs",
+                question: "How should a newborn with FASDs be positioned?",
+                options: [
+                    "On the back only",
+                    "On the abdomen only",
+                    "On the side to facilitate drainage of secretions",
+                    "In an upright position only"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Nursing Interventions for FASDs",
+                question: "True or False: Decreasing environmental stimuli is an important nursing intervention for a newborn with FASDs.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for FASDs",
+                question: "Which of the following is an appropriate feeding intervention for a newborn with FASDs?",
+                options: [
+                    "Large feedings with minimal burping",
+                    "Withhold feedings until reflexes improve",
+                    "Administer small feedings and burp well",
+                    "Force feedings to ensure adequate nutrition"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Newborn of a Mother With HIV",
+                question: "True or False: Newborns born to HIV-positive mothers may test positive because the mother's antibodies may persist in the newborn for 18 months after birth.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Newborn of a Mother With HIV",
+                question: "Which of the following statements is correct regarding newborns born to HIV-positive mothers?",
+                options: [
+                    "All newborns born to HIV-positive mothers acquire the infection",
+                    "All newborns born to HIV-positive mothers acquire maternal antibody to HIV infection, but not all acquire the infection",
+                    "No newborns born to HIV-positive mothers acquire maternal antibody",
+                    "HIV cannot be transmitted from mother to newborn"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Newborn of a Mother With HIV",
+                question: "The newborn of an HIV-positive mother:",
+                options: [
+                    "Always shows symptoms at birth",
+                    "May be asymptomatic for the first several months to years of life",
+                    "Always shows symptoms within the first week",
+                    "Cannot acquire HIV if the mother is on antiretroviral medication"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "HIV Transmission",
+                question: "HIV can be transmitted to the newborn through:",
+                options: [
+                    "Across the placental barrier, during labor and birth, and through breast milk",
+                    "Only through breast milk",
+                    "Only during labor and birth",
+                    "Only across the placental barrier"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "HIV Transmission",
+                question: "True or False: The use of antiviral medication reduces the risk of HIV transmission to the newborn.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Newborn of HIV-Positive Mother",
+                question: "Which of the following is NOT a potential assessment finding in a newborn of an HIV-positive mother?",
+                options: [
+                    "Hepatomegaly",
+                    "Splenomegaly",
+                    "Lymphadenopathy",
+                    "Macrocephaly"
+                ],
+                correctIndex: 3
+            },
+            {
+                topic: "Assessment of Newborn of HIV-Positive Mother",
+                question: "True or False: A newborn of an HIV-positive mother may have no outward signs at birth.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Assessment of Newborn of HIV-Positive Mother",
+                question: "Persistent generalized lymphadenopathy is defined as:",
+                options: [
+                    "Enlarged lymph nodes in one location only",
+                    "The development of enlarged lymph nodes in two or more sites",
+                    "Normal-sized lymph nodes that are tender",
+                    "Absence of palpable lymph nodes"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "HIV Testing in Newborns",
+                question: "Serological (or antibody) tests for HIV in children under 18 months of age:",
+                options: [
+                    "Are reliable and confirm HIV infection",
+                    "Are not reliable because maternal antibodies may still be present",
+                    "Are only performed after 6 months of age",
+                    "Cannot detect maternal antibodies"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "HIV Testing in Newborns",
+                question: "True or False: Virological tests such as DNA PCR tests can detect HIV infection in a child before the child is 18 months old.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "HIV Testing in Newborns",
+                question: "If a rapid antibody test is done for a child older than 18 months and the result is positive, this indicates:",
+                options: [
+                    "The child may have been exposed to HIV but is not infected",
+                    "The child has maternal antibodies but is not infected",
+                    "The child is HIV-infected",
+                    "The test needs to be repeated for confirmation"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Nursing Interventions for Newborn of HIV-Positive Mother",
+                question: "Which of the following statements about circumcision in newborns with HIV-positive mothers is correct?",
+                options: [
+                    "Circumcisions are not done until the newborn's HIV status is determined",
+                    "Circumcisions are always done immediately after birth",
+                    "Circumcisions are never done regardless of the newborn's HIV status",
+                    "Circumcisions are only done if the mother received antiretroviral therapy during pregnancy"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Newborn of HIV-Positive Mother",
+                question: "True or False: All HIV-exposed newborns should be treated with medication to prevent infection by Pneumocystis jiroveci.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Nursing Interventions for Newborn of HIV-Positive Mother",
+                question: "Which of the following is an appropriate intervention when performing invasive procedures on a newborn with an HIV-positive mother?",
+                options: [
+                    "Clean the newborn's skin carefully before any invasive procedure",
+                    "Avoid all invasive procedures",
+                    "Perform invasive procedures only in an isolation room",
+                    "Wear double gloves for all procedures"
+                ],
+                correctIndex: 0
+            },
+            {
+                topic: "Additional Interventions for Newborn of HIV-Positive Mother",
+                question: "How frequently should newborns at risk for HIV infection be seen by the primary health care provider (PHCP) in the first two months?",
+                options: [
+                    "Only at birth",
+                    "At birth and at 1 week, 2 weeks, 1 month, and 2 months",
+                    "Only at 2 months",
+                    "Weekly for the first 6 months"
+                ],
+                correctIndex: 1
+            },
+            {
+                topic: "Additional Interventions for Newborn of HIV-Positive Mother",
+                question: "True or False: Immunizations with live vaccines should not be given until the newborn's HIV status is confirmed.",
+                options: ["True", "False"],
+                correctIndex: 0
+            },
+            {
+                topic: "Additional Interventions for Newborn of HIV-Positive Mother",
+                question: "According to the information provided, HIV culture is recommended at:",
+                options: [
+                    "Birth only",
+                    "1 month only",
+                    "1 month and after 4 months of age",
+                    "Every month for the first year"
+                ],
+                correctIndex: 2
+            },
+            {
+                topic: "Unique Case",
+                question: "True or False: According to the slide, there is a documented rare case of HIV transmission from father to newborn son.",
+                options: ["True", "False"],
+                correctIndex: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answeredQuestions = new Map(); // Map to track answered (correct/incorrect) and skipped questions
+        let correctStreak = 0;
+        let incorrectStreak = 0;
+        
+        // GIF URLs based on streak
+        const gifUrls = {
+            start: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjh1ZHBqbHhvajI2M3k2dWUzMm01cnVtZmU1YTd3eWs1aTB5azZrciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/WNlsQiGMU387hn7UZQ/giphy.gif",
+            correct1: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDhsbzRldjlldDVybml2NnhpODl4ZG55emh1YzNwNDRrbHJ2aG41dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Z9uERnzkW098ezsfMu/giphy.gif",
+            correct2: "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExczQzNHg0eDRtNHc3N2wweWw0amdhdHc5MXA3OWNtajQwNDZ3dHV1YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/2SY3OXaqDf4Pbaiues/giphy.gif",
+            correct3plus: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZm5maDdlM204aW96OGMweDI5cXpnajlybDRxNzN1Ymhod2NncWZxNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/fjxupFeOlzwRnhKT0b/giphy.gif",
+            incorrect1: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXd3b2l4ZTN3bGwxZmd1eXU4cGduaDc5cW56N3N6czRyaG00MmttbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/KdB5DnYdadrJMWP6Rz/giphy.gif",
+            incorrect2: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3VxcnNyMnUwcmlzNm1kdGR0NnhrZjU3ZXB6MHI5eG10Ymp2NzFyNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/dEZKOYuY4oQhMOZGEU/giphy.gif",
+            incorrect3plus: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZm1vcHpwYmQ5YjAxMmxxenRlYWZreTBvcDN5YnUyZG92OGx3cWhleSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SVkhYVCi8fKPKvypi6/giphy.gif",
+            perfect: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGQyODJyeXVkZDBta2E3a3VpZ2R0MnRqOGxobHcya2hoeWQxdzI4dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/MCEneemI5TEZmzeiZk/giphy.gif",
+            good: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGF3MGloMzQ5eHllb2oxZjZmOWlhZmh3NGFieHR1eDE1dDcxZzdzciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/XoM1eSwGMXK4huqV2E/giphy.gif",
+            needsWork: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGdjMWM0OGh5dW5xZWM2MnE2aXZuYmcwdXZxeXgwcXdnbWR6N2xociZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/U1gI8F6VMe4HmHBlwS/giphy.gif"
+        };
+        
+        function loadQuestion() {
+            const questionContainer = document.getElementById('question-container');
+            const question = questions[currentQuestion];
+            
+            // Clear previous question
+            questionContainer.innerHTML = '';
+            
+            // Create question element
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question active';
+            
+            // Add topic
+            const topicElement = document.createElement('div');
+            topicElement.className = 'topic-title';
+            topicElement.textContent = question.topic;
+            questionElement.appendChild(topicElement);
+            
+            // Add question text
+            const questionTextElement = document.createElement('div');
+            questionTextElement.className = 'question-text';
+            
+            // Check if this question was skipped before
+            const wasSkipped = answeredQuestions.get(currentQuestion) === 'skipped';
+            if (wasSkipped) {
+                questionTextElement.innerHTML = `${question.question} <span class="skipped-label">Previously Skipped</span>`;
+            } else {
+                questionTextElement.textContent = question.question;
+            }
+            
+            questionElement.appendChild(questionTextElement);
+            
+            // Add options
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', selectOption);
+                optionsElement.appendChild(optionElement);
+            });
+            
+            questionElement.appendChild(optionsElement);
+            
+            // Add feedback area
+            const feedbackElement = document.createElement('div');
+            feedbackElement.className = 'feedback';
+            feedbackElement.id = 'feedback';
+            questionElement.appendChild(feedbackElement);
+            
+            questionContainer.appendChild(questionElement);
+            
+            // Update progress
+            updateProgress();
+            
+            // Enable/disable navigation buttons
+            document.getElementById('prev-btn').disabled = currentQuestion === 0;
+            document.getElementById('next-btn').disabled = !answeredQuestions.has(currentQuestion) || answeredQuestions.get(currentQuestion) === 'skipped';
+            document.getElementById('first-btn').disabled = currentQuestion === 0;
+            document.getElementById('last-btn').disabled = currentQuestion === questions.length - 1;
+            
+            // If this question was already answered and not skipped, show the previous result
+            if (answeredQuestions.has(currentQuestion) && answeredQuestions.get(currentQuestion) !== 'skipped') {
+                showPreviousAnswer();
+            }
+        }
+        
+        function updateMascotGif(isCorrect) {
+            const mascotGif = document.getElementById('mascot-gif');
+            
+            if (isCorrect === 'start') {
+                mascotGif.src = gifUrls.start;
+                return;
+            }
+            
+            if (isCorrect) {
+                incorrectStreak = 0;
+                correctStreak++;
+                
+                if (correctStreak === 1) {
+                    mascotGif.src = gifUrls.correct1;
+                } else if (correctStreak === 2) {
+                    mascotGif.src = gifUrls.correct2;
+                } else {
+                    mascotGif.src = gifUrls.correct3plus;
+                }
+            } else {
+                correctStreak = 0;
+                incorrectStreak++;
+                
+                if (incorrectStreak === 1) {
+                    mascotGif.src = gifUrls.incorrect1;
+                } else if (incorrectStreak === 2) {
+                    mascotGif.src = gifUrls.incorrect2;
+                } else {
+                    mascotGif.src = gifUrls.incorrect3plus;
+                }
+            }
+        }
+        
+        function showPreviousAnswer() {
+            const correctIndex = questions[currentQuestion].correctIndex;
+            const options = document.querySelectorAll('.option');
+            const answerStatus = answeredQuestions.get(currentQuestion);
+            
+            options.forEach((option, index) => {
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                }
+                
+                if (answerStatus === 'incorrect' && index !== correctIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.style.display = 'block';
+            feedback.textContent = `The correct answer is: ${questions[currentQuestion].options[correctIndex]}`;
+            feedback.style.borderColor = answerStatus === 'correct' ? '#28a745' : '#dc3545';
+            
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+        }
+        
+        function selectOption(event) {
+            // If already answered (but not skipped), do nothing
+            if (answeredQuestions.has(currentQuestion) && answeredQuestions.get(currentQuestion) !== 'skipped') {
+                return;
+            }
+            
+            const selectedOption = event.target;
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            const correctIndex = questions[currentQuestion].correctIndex;
+            
+            // Clear any previous selection
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark this option as selected
+            selectedOption.classList.add('selected');
+            
+            // Check if correct
+            const isCorrect = selectedIndex === correctIndex;
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                if (!answeredQuestions.has(currentQuestion) || answeredQuestions.get(currentQuestion) === 'skipped') {
+                    score++;
+                }
+                answeredQuestions.set(currentQuestion, 'correct');
+            } else {
+                selectedOption.classList.add('incorrect');
+                options[correctIndex].classList.add('correct');
+                answeredQuestions.set(currentQuestion, 'incorrect');
+            }
+            
+            // Update mascot GIF
+            updateMascotGif(isCorrect);
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.style.display = 'block';
+            if (isCorrect) {
+                feedback.textContent = 'Correct! Well done.';
+                feedback.style.borderColor = '#28a745';
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${questions[currentQuestion].options[correctIndex]}`;
+                feedback.style.borderColor = '#dc3545';
+            }
+            
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+            
+            // Update score tracker
+            updateScoreTracker();
+        }
+        
+        function skipQuestion() {
+            // Mark as skipped only if not already answered
+            if (!answeredQuestions.has(currentQuestion) || answeredQuestions.get(currentQuestion) === 'skipped') {
+                answeredQuestions.set(currentQuestion, 'skipped');
+            }
+            
+            nextQuestion();
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+        
+        function goToFirstQuestion() {
+            currentQuestion = 0;
+            loadQuestion();
+        }
+        
+        function goToLastQuestion() {
+            currentQuestion = questions.length - 1;
+            loadQuestion();
+        }
+        
+        function updateProgress() {
+            const progressText = document.getElementById('progress-text');
+            progressText.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            
+            const progressFill = document.getElementById('progress-fill');
+            const percentage = ((currentQuestion + 1) / questions.length) * 100;
+            progressFill.style.width = `${percentage}%`;
+        }
+        
+        function updateScoreTracker() {
+            const scoreTracker = document.getElementById('score-tracker');
+            const percentage = (score / questions.length * 100).toFixed(1);
+            scoreTracker.textContent = `Correct: ${score}/${questions.length} (${percentage}%)`;
+        }
+        
+        function showResults() {
+            document.getElementById('question-container').style.display = 'none';
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('skip-btn').style.display = 'none';
+            document.getElementById('first-btn').style.display = 'none';
+            document.getElementById('last-btn').style.display = 'none';
+            document.querySelector('.progress').style.display = 'none';
+            document.querySelector('.mascot-container').style.display = 'none';
+            
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.style.display = 'block';
+            
+            const scoreDisplay = document.getElementById('score-display');
+            const percentage = (score / questions.length * 100).toFixed(1);
+            scoreDisplay.textContent = `${score}/${questions.length} (${percentage}%)`;
+            
+            // Count skipped questions
+            let skippedCount = 0;
+            answeredQuestions.forEach((status) => {
+                if (status === 'skipped') skippedCount++;
+            });
+            
+            const skippedInfo = document.getElementById('skipped-questions-info');
+            if (skippedCount > 0) {
+                skippedInfo.textContent = `You skipped ${skippedCount} question${skippedCount > 1 ? 's' : ''}.`;
+            } else {
+                skippedInfo.textContent = 'You answered all questions!';
+            }
+            
+            // Add result message and GIF based on score percentage
+            const resultMessage = document.getElementById('result-message');
+            const resultGif = document.getElementById('result-gif');
+            const scorePercentage = (score / questions.length) * 100;
+            
+            if (scorePercentage === 100) {
+                resultMessage.textContent = "Perfect score! Amazing job!";
+                resultGif.src = gifUrls.perfect;
+            } else if (scorePercentage >= 70) {
+                resultMessage.textContent = "You could rest now!";
+                resultGif.src = gifUrls.good;
+            } else {
+                resultMessage.textContent = "Study harder!";
+                resultGif.src = gifUrls.needsWork;
+            }
+        }
+        
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answeredQuestions = new Map();
+            correctStreak = 0;
+            incorrectStreak = 0;
+            
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('prev-btn').style.display = 'inline-block';
+            document.getElementById('next-btn').style.display = 'inline-block';
+            document.getElementById('skip-btn').style.display = 'inline-block';
+            document.getElementById('first-btn').style.display = 'inline-block';
+            document.getElementById('last-btn').style.display = 'inline-block';
+            document.querySelector('.progress').style.display = 'block';
+            document.querySelector('.mascot-container').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+            
+            // Reset to start GIF
+            updateMascotGif('start');
+            
+            updateScoreTracker();
+            loadQuestion();
+        }
+        
+        // Set up event listeners
+        document.getElementById('next-btn').addEventListener('click', nextQuestion);
+        document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+        document.getElementById('skip-btn').addEventListener('click', skipQuestion);
+        document.getElementById('first-btn').addEventListener('click', goToFirstQuestion);
+        document.getElementById('last-btn').addEventListener('click', goToLastQuestion);
+        document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+        
+        // Initialize score tracker
+        updateScoreTracker();
+        
+        // Load the first question
+        loadQuestion();
+    </script>
+</body>
+</html>
